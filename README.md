@@ -1,7 +1,7 @@
 # DMI Weather
 A script created to gather information about current weather from DMI (Danish Meteorological Institute). The script was originally created to function as a block for [i3blocks](https://github.com/vivien/i3blocks), but can also be used as a standalone.
 
-The script uses geo location based on IP address to determine location to gather weather data from, using [IPInfo](https://ipinfo.io/) and will output a string on the form `descriptor, precipitation(if applicable) temperature humidity wind_direction wind_speed`.
+The script uses geo location based on IP address to determine location to gather weather data from, using [IPInfo](https://ipinfo.io/). Output is a string on the form `descriptor, precipitation(if applicable) temperature humidity wind_direction wind_speed`.
 
 Run the script from terminal
 ```
