@@ -7,6 +7,14 @@ from pathlib import Path
 
 default_path = f'{Path.home()}/.config/i3blocks/dmi-weather/scrloc.py'
 dmi_url = 'https://www.dmi.dk/NinJo2DmiDk/ninjo2dmidk?cmd=llj&id='
+ip_url = 'https://ipinfo.io/'
+
+try:
+    token = open(f'{Path.home()}/.config/i3blocks/dmi-weather/token').readline().strip('\n')
+    ip_url += f'?token={token}'
+except:
+    # simply continue if token is not found
+    pass
 
 # Try opening on config-path, if not found, try pwd
 try:
@@ -20,7 +28,7 @@ file.close()
 
 def get_loc() -> str:
     try:
-        response = request.urlopen(f'https://ipinfo.io/', timeout=5).read().decode('utf-8')
+        response = request.urlopen(ip_url, timeout=5).read().decode('utf-8')
     except URLError:
         response = "Failed to get response"
     return response
