@@ -4,10 +4,50 @@ import json
 from urllib import request
 from urllib.error import URLError
 from pathlib import Path
-import os
-import subprocess
 
 default_path = f'{Path.home()}/.config/i3blocks/dmi-weather/scrloc.py'
+dmi_url = 'https://www.dmi.dk/NinJo2DmiDk/ninjo2dmidk?cmd=llj&id='
+
+# Try opening on config-path, if not found, try pwd
+try:
+    file = open(f'{Path.home()}/.config/i3blocks/dmi-weather/cities')
+except:
+    file = open("./cities")
+
+cities = file.read().split('\n')
+file.close()
+
+
+def get_loc() -> str:
+    try:
+        response = request.urlopen(f'https://ipinfo.io/', timeout=5).read().decode('utf-8')
+    except URLError:
+        response = "Failed to get response"
+    return response
+
+
+def extract_city_id(city: str) -> int:
+    for x in cities:
+        if city in x:
+            return int(x.split(':')[0])
+    # øØ
+    if '\u00F8' in city or '\u00D8' in city:
+        city = city.replace('\u00F8', 'o').replace('\u00D8', 'O')
+    # æÆ
+    elif '\u00E6' in city or '\u00C6' in city:
+        city = city.replace('\u00E6', 'ae').replace('\u00C6', 'AE')
+    # åÅ
+    elif '\u00E5' in city or '\u00C5' in city:
+        city = city.replace('\u00E5', 'aa').replace('\u00C5', 'Aa')
+    else:
+        print(f'Error: could not find city \'{city}\'')
+        exit(1)
+    return extract_city_id(city)
+
+
+def extract_city(data: str) -> int:
+    obj = json.loads(data)
+    return extract_city_id(obj['city'])
 
 
 def get_weather_data(url: str) -> str:
@@ -95,12 +135,4 @@ def format_line(data: str) -> str:
 
 
 if __name__ == '__main__':
-    # Try getting city from config-path, if not found, try pwd
-    try:
-        # Redirect stderr to /dev/null, to avoid printing errors on using fallback location for scrloc.py
-        with open(os.devnull) as null:
-            city = int(subprocess.run(['python', default_path], stdout=subprocess.PIPE, stderr=null).stdout.decode('utf-8'))
-    except:
-        city = int(subprocess.run(['python', './scrloc.py'], stdout=subprocess.PIPE).stdout.decode('utf-8'))
-
-    print(format_line(get_weather_data(f'https://www.dmi.dk/NinJo2DmiDk/ninjo2dmidk?cmd=llj&id={city}')))
+    print(format_line(get_weather_data(f'{dmi_url}{extract_city(get_loc())}')))
