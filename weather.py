@@ -3,9 +3,11 @@
 import json
 from urllib import request
 from urllib.error import URLError
+from pathlib import Path
 import subprocess
 
-city = int(subprocess.run(['python', './scrloc.py'], stdout=subprocess.PIPE).stdout.decode('utf-8'))
+city = int(subprocess.run(['python', f'{Path.home()}/.config/i3blocks/dmi-weather/scrloc.py'], stdout=subprocess.PIPE)\
+           .stdout.decode('utf-8'))
 
 
 def get_weather_data(url: str) -> str:
