@@ -4,6 +4,7 @@ import json
 from urllib import request
 from urllib.error import URLError
 from pathlib import Path
+import os
 import subprocess
 
 default_path = f'{Path.home()}/.config/i3blocks/dmi-weather/scrloc.py'
@@ -30,14 +31,15 @@ def format_wind_dir(wind: str) -> str:
 
 
 def format_desc_with_prec(prec: float, desc: str) -> str:
-    if prec < 0.5:
+    if 0.5 > prec > 0.0:
         return f'{desc}, drizzle'
-    elif prec < 1:
+    elif 1 > prec > 0.5:
         return f'{desc}, light rain'
-    elif prec < 2:
+    elif 2 > prec > 1:
         return f'{desc}, rain'
-    else:
+    elif prec > 2:
         return f'{desc}, heavy rain'
+    return desc
 
 
 def format_weather_desc(prec: float, icon: int) -> str:
@@ -96,7 +98,8 @@ if __name__ == '__main__':
     # Try getting city from config-path, if not found, try pwd
     try:
         # Redirect stderr to /dev/null, to avoid printing errors on using fallback location for scrloc.py
-        city = int(subprocess.run(['python', default_path], stdout=subprocess.PIPE, stderr="dev/null").stdout.decode('utf-8'))
+        with open(os.devnull) as null:
+            city = int(subprocess.run(['python', default_path], stdout=subprocess.PIPE, stderr=null).stdout.decode('utf-8'))
     except:
         city = int(subprocess.run(['python', './scrloc.py'], stdout=subprocess.PIPE).stdout.decode('utf-8'))
 
