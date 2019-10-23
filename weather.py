@@ -5,7 +5,6 @@ from urllib import request
 from urllib.error import URLError
 from pathlib import Path
 
-default_path = f'{Path.home()}/.config/i3blocks/dmi-weather/scrloc.py'
 dmi_url = 'https://www.dmi.dk/NinJo2DmiDk/ninjo2dmidk?cmd=llj&id='
 ip_url = 'https://ipinfo.io/'
 
